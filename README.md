@@ -12,4 +12,4 @@ this project show the network of iot devices and some simulation that describe b
 
 # license
 
-mit
+MIT
