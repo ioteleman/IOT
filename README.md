@@ -2,6 +2,8 @@
 
 in this project we evaluate the virtualization in the side of iot server and we see how is important
 
+![iot net](https://github.com/ioteleman/IOT/blob/master/net.jpg)
+
 # project files
 
 this project show the network of iot devices and some simulation that describe below:
