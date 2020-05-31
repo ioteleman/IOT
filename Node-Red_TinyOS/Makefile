@@ -1,4 +1,4 @@
-COMPONENT=TinyOS2NodeRedAppC
+COMPONENT=TinyOStoNode-RedAppC
 CFLAGS += -I$(TOSDIR)/lib/printf
 CFLAGS += -DNEW_PRINTF_SEMANTICS
 include $(MAKERULES)
