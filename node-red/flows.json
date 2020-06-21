@@ -1,1 +1,617 @@
-[{"id":"3c7fa0ad.33c2a","type":"tab","label":"activity_4","disabled":false,"info":"#author:amirhosein_ataei"},{"id":"f550c58d.8491c8","type":"inject","z":"3c7fa0ad.33c2a","name":"Inject","topic":"","payload":"","payloadType":"date","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":210,"y":240,"wires":[["ca3878b4.7bdba8"]]},{"id":"4ba0df63.7c337","type":"csv","z":"3c7fa0ad.33c2a","name":"Convert data to js values","sep":";","hdrin":false,"hdrout":false,"multi":"one","ret":"\\n","temp":"","skip":"0","x":150,"y":320,"wires":[["8db1b4a2.cc1238"]]},{"id":"973de454.0405b8","type":"debug","z":"3c7fa0ad.33c2a","name":"http and exec return stat","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","x":1350,"y":320,"wires":[]},{"id":"8db1b4a2.cc1238","type":"split","z":"3c7fa0ad.33c2a","name":"split data on spaces","splt":" ","spltType":"str","arraySplt":"1","arraySpltType":"len","stream":false,"addname":"key","x":160,"y":360,"wires":[["1daa8e0f.2ffca2"]]},{"id":"1daa8e0f.2ffca2","type":"function","z":"3c7fa0ad.33c2a","name":"select Publish messages","func":"if (msg.payload.search(\"Publish\") > 0)\n    return msg;","outputs":1,"noerr":0,"x":150,"y":400,"wires":[["a09bbfa.392f34"]]},{"id":"ca3878b4.7bdba8","type":"file in","z":"3c7fa0ad.33c2a","name":"traffic..csv","filename":"/home/user/Desktop/iot-examples/lesson5/traffic.csv","format":"lines","chunk":false,"sendError":false,"x":200,"y":280,"wires":[["4ba0df63.7c337"]]},{"id":"174dbae.cb18f45","type":"csv","z":"3c7fa0ad.33c2a","name":"make js class on payload","sep":",","hdrin":"","hdrout":"","multi":"one","ret":"\\n","temp":"","skip":"0","x":750,"y":200,"wires":[["fe40359a.75bd38"]]},{"id":"a7977eda.0fd94","type":"function","z":"3c7fa0ad.33c2a","name":"select HEX payload","func":"if (msg.payload.search(\"7b22\") > 0){\n    var strLen = msg.payload.length;\n    msg.payload = msg.payload.substring(msg.payload.search(\"7b22\"), strLen);\n    return msg;\n}","outputs":1,"noerr":0,"x":770,"y":120,"wires":[["94eeac64.85c5e"]]},{"id":"94eeac64.85c5e","type":"function","z":"3c7fa0ad.33c2a","name":"hex2string","func":"msg.payload = Buffer.from(msg.payload, 'hex').toString();\nreturn msg;","outputs":1,"noerr":0,"x":790,"y":160,"wires":[["174dbae.cb18f45"]]},{"id":"fe40359a.75bd38","type":"change","z":"3c7fa0ad.33c2a","name":"select numerical part of value","rules":[{"t":"change","p":"payload.col2","pt":"msg","from":"value: ","fromt":"str","to":"","tot":"str"}],"action":"","property":"","from":"","to":"","reg":false,"x":740,"y":240,"wires":[["d6802b78.868fa8"]]},{"id":"d6802b78.868fa8","type":"function","z":"3c7fa0ad.33c2a","name":"http and exec formation of plc","func":"var api_key = \"ZGP69UMELXX9HWKQ\";\nvar mqtt_key = \"CETVDOE3ZF9YPMPF\";\nvar channel_ID = \"1066981\";\nvar data = msg.payload.col2 ;\nmsg.url = \"https://api.thingspeak.com/update?api_key=\"+api_key + \"&field1=\" + data;\nmsg.payload = \"'channels/\"+channel_ID+\"/publish/\"+mqtt_key+\"' -m 'field1=\"+data+\"&status=MQTTPUBLISH' -d \";\nreturn msg;","outputs":1,"noerr":0,"x":730,"y":280,"wires":[["5c16042e.da8d2c"]]},{"id":"9d8d5b6a.fd1658","type":"http request","z":"3c7fa0ad.33c2a","name":"http request to thingspeak ","method":"GET","ret":"txt","url":"","tls":"","x":1070,"y":320,"wires":[["973de454.0405b8"]]},{"id":"5c16042e.da8d2c","type":"delay","z":"3c7fa0ad.33c2a","name":"","pauseType":"rate","timeout":"1","timeoutUnits":"minutes","rate":"1","nbRateUnits":"1","rateUnits":"minute","randomFirst":"1","randomLast":"5","randomUnits":"seconds","drop":false,"x":770,"y":320,"wires":[["db9085f2.576248"]]},{"id":"aabe58d6.a01038","type":"debug","z":"3c7fa0ad.33c2a","name":"debug plc value","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload.col2","x":1320,"y":240,"wires":[]},{"id":"a09bbfa.392f34","type":"switch","z":"3c7fa0ad.33c2a","name":"Topic selection","property":"payload","propertyType":"msg","rules":[{"t":"cont","v":"factory/department1/section1/plc","vt":"str"},{"t":"cont","v":"factory/department3/section3/plc","vt":"str"},{"t":"cont","v":"factory/department1/section1/hydraulic_valve","vt":"str"},{"t":"cont","v":"factory/department3/section3/hydraulic_valve","vt":"str"}],"checkall":"true","repair":false,"outputs":4,"x":420,"y":320,"wires":[["86cf3730.387438"],["86cf3730.387438"],["5ed1fc5b.c9ef44"],["5ed1fc5b.c9ef44"]]},{"id":"f5b122aa.17729","type":"csv","z":"3c7fa0ad.33c2a","name":"make js class on payload","sep":",","hdrin":"","hdrout":"","multi":"one","ret":"\\n","temp":"","skip":"0","x":750,"y":440,"wires":[["a88b8e95.e1f2"]]},{"id":"17ffe3d1.760adc","type":"function","z":"3c7fa0ad.33c2a","name":"hex2string","func":"msg.payload = Buffer.from(msg.payload, 'hex').toString();\nreturn msg;","outputs":1,"noerr":0,"x":790,"y":480,"wires":[["f5b122aa.17729"]]},{"id":"a88b8e95.e1f2","type":"change","z":"3c7fa0ad.33c2a","name":"select numerical part of value","rules":[{"t":"change","p":"payload.col2","pt":"msg","from":"value: ","fromt":"str","to":"","tot":"str"}],"action":"","property":"","from":"","to":"","reg":false,"x":740,"y":400,"wires":[["c34810ed.14cd2"]]},{"id":"a7172e87.2a288","type":"function","z":"3c7fa0ad.33c2a","name":"select HEX payload","func":"if (msg.payload.search(\"7b22\") > 0){\n    var strLen = msg.payload.length;\n    msg.payload = msg.payload.substring(msg.payload.search(\"7b22\"), strLen);\n    return msg;\n}","outputs":1,"noerr":0,"x":770,"y":520,"wires":[["17ffe3d1.760adc"]]},{"id":"19ebfde4.f7eab2","type":"debug","z":"3c7fa0ad.33c2a","name":"debug valve value","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload","x":1330,"y":280,"wires":[]},{"id":"70d8819c.d7428","type":"switch","z":"3c7fa0ad.33c2a","name":"separating values to debug ","property":"url","propertyType":"msg","rules":[{"t":"cont","v":"field1","vt":"str"},{"t":"cont","v":"field2","vt":"str"}],"checkall":"true","repair":false,"outputs":2,"x":1080,"y":260,"wires":[["aabe58d6.a01038"],["19ebfde4.f7eab2"]]},{"id":"86cf3730.387438","type":"split","z":"3c7fa0ad.33c2a","name":"split hex codes in same row","splt":",","spltType":"str","arraySplt":1,"arraySpltType":"len","stream":false,"addname":"","x":480,"y":160,"wires":[["a7977eda.0fd94"]]},{"id":"5ed1fc5b.c9ef44","type":"split","z":"3c7fa0ad.33c2a","name":"split hex codes in same row","splt":",","spltType":"str","arraySplt":1,"arraySpltType":"len","stream":false,"addname":"","x":480,"y":480,"wires":[["a7172e87.2a288"]]},{"id":"db9085f2.576248","type":"exec","z":"3c7fa0ad.33c2a","command":"mosquitto_pub -h 'mqtt.thingspeak.com' -p '1883' -t","addpay":true,"append":"","useSpawn":"false","timer":"","oldrc":false,"name":"execute mosquito to publish mqtt","x":1100,"y":380,"wires":[["973de454.0405b8"],[],[]]},{"id":"c34810ed.14cd2","type":"function","z":"3c7fa0ad.33c2a","name":"http and exec formation of valve","func":"var api_key = \"VKE45GRBHEY3J9WW\";\nvar mqtt_key = \"VKE45GRBHEY3J9WW\";\nvar channel_ID = \"1066943\";\nvar data = msg.payload.col2 ;\nmsg.url = \"https://api.thingspeak.com/update?api_key=\"+api_key + \"&field2=\" + data;\nmsg.payload = \"'channels/\"+channel_ID+\"/publish/\"+mqtt_key+\"' -m 'field2=\"+data+\"&status=MQTTPUBLISH' -d \";\nreturn msg;","outputs":1,"noerr":0,"x":730,"y":360,"wires":[["5c16042e.da8d2c"]]}]
+[
+    {
+        "id": "c9390a.bc9f0ef8",
+        "type": "tab",
+        "label": "activity_4",
+        "disabled": false,
+        "info": "#author:amirhosein_ataei"
+    },
+    {
+        "id": "8a9a8a88.ca1ed",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-light",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#0094CE",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#0094CE",
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#fafafa",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-textColor": {
+                    "value": "#1bbfff",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "widget-textColor": {
+                    "value": "#111111",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#0094ce",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "base-font": {
+                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+                }
+            }
+        },
+        "site": {
+            "name": "Node-RED Dashboard",
+            "hideToolbar": "false",
+            "allowSwipe": "false",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "7c57fe4d.b205b8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Default",
+        "tab": "",
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "3e0ac374.c451f4",
+        "type": "inject",
+        "z": "c9390a.bc9f0ef8",
+        "name": "Inject",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 210,
+        "y": 240,
+        "wires": [
+            [
+                "7a8ebfb5.f31da8"
+            ]
+        ]
+    },
+    {
+        "id": "26745e24.d3dcba",
+        "type": "csv",
+        "z": "c9390a.bc9f0ef8",
+        "name": "Convert data to js values",
+        "sep": ";",
+        "hdrin": false,
+        "hdrout": false,
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "",
+        "skip": "0",
+        "x": 150,
+        "y": 320,
+        "wires": [
+            [
+                "4bc9e18a.4ae238"
+            ]
+        ]
+    },
+    {
+        "id": "813dd830.89775",
+        "type": "debug",
+        "z": "c9390a.bc9f0ef8",
+        "name": "http and exec return stat",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1350,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "4bc9e18a.4ae238",
+        "type": "split",
+        "z": "c9390a.bc9f0ef8",
+        "name": "split data on spaces",
+        "splt": " ",
+        "spltType": "str",
+        "arraySplt": "1",
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "key",
+        "x": 160,
+        "y": 360,
+        "wires": [
+            [
+                "f5f47f20.d73b88"
+            ]
+        ]
+    },
+    {
+        "id": "f5f47f20.d73b88",
+        "type": "function",
+        "z": "c9390a.bc9f0ef8",
+        "name": "select Publish messages",
+        "func": "if (msg.payload.search(\"Publish\") > 0)\n    return msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 150,
+        "y": 400,
+        "wires": [
+            [
+                "99d0db5b.ceb888"
+            ]
+        ]
+    },
+    {
+        "id": "7a8ebfb5.f31da8",
+        "type": "file in",
+        "z": "c9390a.bc9f0ef8",
+        "name": "traffic..csv",
+        "filename": "/home/user/Desktop/traffic.csv",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "x": 200,
+        "y": 280,
+        "wires": [
+            [
+                "26745e24.d3dcba"
+            ]
+        ]
+    },
+    {
+        "id": "f9e8bce6.4a64d8",
+        "type": "csv",
+        "z": "c9390a.bc9f0ef8",
+        "name": "make js class on payload",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "",
+        "skip": "0",
+        "x": 750,
+        "y": 200,
+        "wires": [
+            [
+                "b6583198.ebba3"
+            ]
+        ]
+    },
+    {
+        "id": "c903fa91.6038d8",
+        "type": "function",
+        "z": "c9390a.bc9f0ef8",
+        "name": "select HEX payload",
+        "func": "if (msg.payload.search(\"7b22\") > 0){\n    var strLen = msg.payload.length;\n    msg.payload = msg.payload.substring(msg.payload.search(\"7b22\"), strLen);\n    return msg;\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 770,
+        "y": 120,
+        "wires": [
+            [
+                "de53d5c9.e7ac7"
+            ]
+        ]
+    },
+    {
+        "id": "de53d5c9.e7ac7",
+        "type": "function",
+        "z": "c9390a.bc9f0ef8",
+        "name": "hex2string",
+        "func": "msg.payload = Buffer.from(msg.payload, 'hex').toString();\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 790,
+        "y": 160,
+        "wires": [
+            [
+                "f9e8bce6.4a64d8"
+            ]
+        ]
+    },
+    {
+        "id": "b6583198.ebba3",
+        "type": "change",
+        "z": "c9390a.bc9f0ef8",
+        "name": "select numerical part of value",
+        "rules": [
+            {
+                "t": "change",
+                "p": "payload.col2",
+                "pt": "msg",
+                "from": "value: ",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 740,
+        "y": 240,
+        "wires": [
+            [
+                "5f92241.df43d5c"
+            ]
+        ]
+    },
+    {
+        "id": "5f92241.df43d5c",
+        "type": "function",
+        "z": "c9390a.bc9f0ef8",
+        "name": "http and exec formation of plc",
+        "func": "var api_key = \"Q99NOC8KC8Q92CJQ\";\nvar mqtt_key = \"CETVDOE3ZF9YPMPF\";\nvar channel_ID = \"1066981\";\nvar data = msg.payload.col2 ;\nmsg.url = \"https://api.thingspeak.com/update?api_key=\"+api_key + \"&field1=\" + data;\nmsg.payload = \"'channels/\"+channel_ID+\"/publish/\"+mqtt_key+\"' -m 'field1=\"+data+\"&status=MQTTPUBLISH' -d \";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 730,
+        "y": 280,
+        "wires": [
+            [
+                "2c4625b7.058d72"
+            ]
+        ]
+    },
+    {
+        "id": "c4dae275.9fe5b8",
+        "type": "http request",
+        "z": "c9390a.bc9f0ef8",
+        "name": "http request to thingspeak ",
+        "method": "GET",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 1070,
+        "y": 320,
+        "wires": [
+            [
+                "813dd830.89775"
+            ]
+        ]
+    },
+    {
+        "id": "2c4625b7.058d72",
+        "type": "delay",
+        "z": "c9390a.bc9f0ef8",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "1",
+        "timeoutUnits": "minutes",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 770,
+        "y": 320,
+        "wires": [
+            [
+                "e55e47a2.f18fd8"
+            ]
+        ]
+    },
+    {
+        "id": "fa88c1e7.3da7f8",
+        "type": "debug",
+        "z": "c9390a.bc9f0ef8",
+        "name": "debug plc value",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload.col2",
+        "x": 1320,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "99d0db5b.ceb888",
+        "type": "switch",
+        "z": "c9390a.bc9f0ef8",
+        "name": "Topic selection",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "factory/department1/section1/plc",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "factory/department3/section3/plc",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "factory/department1/section1/hydraulic_valve",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "factory/department3/section3/hydraulic_valve",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 4,
+        "x": 420,
+        "y": 320,
+        "wires": [
+            [
+                "913083a0.a02a9"
+            ],
+            [
+                "913083a0.a02a9"
+            ],
+            [
+                "489e989f.56b17"
+            ],
+            [
+                "489e989f.56b17"
+            ]
+        ]
+    },
+    {
+        "id": "23653cc5.1b37fc",
+        "type": "csv",
+        "z": "c9390a.bc9f0ef8",
+        "name": "make js class on payload",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "",
+        "skip": "0",
+        "x": 750,
+        "y": 440,
+        "wires": [
+            [
+                "ebc27604.2f7f98"
+            ]
+        ]
+    },
+    {
+        "id": "51987079.da652",
+        "type": "function",
+        "z": "c9390a.bc9f0ef8",
+        "name": "hex2string",
+        "func": "msg.payload = Buffer.from(msg.payload, 'hex').toString();\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 790,
+        "y": 480,
+        "wires": [
+            [
+                "23653cc5.1b37fc"
+            ]
+        ]
+    },
+    {
+        "id": "ebc27604.2f7f98",
+        "type": "change",
+        "z": "c9390a.bc9f0ef8",
+        "name": "select numerical part of value",
+        "rules": [
+            {
+                "t": "change",
+                "p": "payload.col2",
+                "pt": "msg",
+                "from": "value: ",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 740,
+        "y": 400,
+        "wires": [
+            [
+                "53152bef.b2f544"
+            ]
+        ]
+    },
+    {
+        "id": "17fbdc99.a675eb",
+        "type": "function",
+        "z": "c9390a.bc9f0ef8",
+        "name": "select HEX payload",
+        "func": "if (msg.payload.search(\"7b22\") > 0){\n    var strLen = msg.payload.length;\n    msg.payload = msg.payload.substring(msg.payload.search(\"7b22\"), strLen);\n    return msg;\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 770,
+        "y": 520,
+        "wires": [
+            [
+                "51987079.da652"
+            ]
+        ]
+    },
+    {
+        "id": "18da5715.402911",
+        "type": "debug",
+        "z": "c9390a.bc9f0ef8",
+        "name": "debug valve value",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 1330,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "8b9d0d09.7181f",
+        "type": "switch",
+        "z": "c9390a.bc9f0ef8",
+        "name": "separating values to debug ",
+        "property": "url",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "field1",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "field2",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1080,
+        "y": 260,
+        "wires": [
+            [
+                "fa88c1e7.3da7f8"
+            ],
+            [
+                "18da5715.402911"
+            ]
+        ]
+    },
+    {
+        "id": "913083a0.a02a9",
+        "type": "split",
+        "z": "c9390a.bc9f0ef8",
+        "name": "split hex codes in same row",
+        "splt": ",",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 480,
+        "y": 160,
+        "wires": [
+            [
+                "c903fa91.6038d8"
+            ]
+        ]
+    },
+    {
+        "id": "489e989f.56b17",
+        "type": "split",
+        "z": "c9390a.bc9f0ef8",
+        "name": "split hex codes in same row",
+        "splt": ",",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 480,
+        "y": 480,
+        "wires": [
+            [
+                "17fbdc99.a675eb"
+            ]
+        ]
+    },
+    {
+        "id": "e55e47a2.f18fd8",
+        "type": "exec",
+        "z": "c9390a.bc9f0ef8",
+        "command": "mosquitto_pub -h 'mqtt.thingspeak.com' -p '1883' -t",
+        "addpay": true,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "execute mosquito to publish mqtt",
+        "x": 1100,
+        "y": 380,
+        "wires": [
+            [
+                "813dd830.89775"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "53152bef.b2f544",
+        "type": "function",
+        "z": "c9390a.bc9f0ef8",
+        "name": "http and exec formation of valve",
+        "func": "var api_key = \"Q99NOC8KC8Q92CJQ\";\nvar mqtt_key = \"CETVDOE3ZF9YPMPF\";\nvar channel_ID = \"1066981\";\nvar data = msg.payload.col2 ;\nmsg.url = \"https://api.thingspeak.com/update?api_key=\"+api_key + \"&field2=\" + data;\nmsg.payload = \"'channels/\"+channel_ID+\"/publish/\"+mqtt_key+\"' -m 'field2=\"+data+\"&status=MQTTPUBLISH' -d \";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 730,
+        "y": 360,
+        "wires": [
+            [
+                "2c4625b7.058d72"
+            ]
+        ]
+    }
+]
