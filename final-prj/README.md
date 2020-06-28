@@ -1,6 +1,6 @@
 ![result](https://github.com/ioteleman/IOT/blob/master/final-prj/high.jpg)
 
-iot final project  
+# iot final project  
 
 1-Setting up a wireless LAN via the command line in rpi  
 
@@ -57,3 +57,7 @@ http://Your_RPi_IP_address:1880/ui
 10- for installing led in node-red ui use this command:
 
 npm install node-red-contrib-ui-led  
+
+# licence  
+
+MIT  
