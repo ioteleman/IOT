@@ -1,3 +1,5 @@
+![result](https://github.com/ioteleman/IOT/blob/master/final-prj/high.jpg)
+
 iot final project  
 
 1-Setting up a wireless LAN via the command line in rpi  
